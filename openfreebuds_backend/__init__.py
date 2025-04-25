@@ -9,3 +9,6 @@ elif platform.system() == "Windows":
     from openfreebuds_backend.windows.bt_win32 import *
     from openfreebuds_backend.windows.ui_win32 import *
     from openfreebuds_backend.windows.misc_win32 import *
+elif platform.system() == "Darwin":  # Darwin est le nom du système pour macOS
+    from openfreebuds_backend.macos.macos_bt import *
+    from openfreebuds_backend.macos.macos_misc import *

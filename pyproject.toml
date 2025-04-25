@@ -15,6 +15,8 @@ dependencies = [
     "pynput<2.0.0,>=1.7.7",
     "dbus-next<1.0.0,>=0.2.3",
     "winsdk==1.0.0b10; sys_platform == 'win32'",
+    "pyobjc>=7.3; sys_platform == 'darwin'",
+    "pyobjc-framework-CoreBluetooth>=7.3; sys_platform == 'darwin'",
 ]
 
 [dependency-groups]
