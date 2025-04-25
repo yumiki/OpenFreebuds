@@ -24,7 +24,7 @@ from openfreebuds_backend.exception import BackendException, OfbBackendDependenc
 log = logging.getLogger("OfbMacOSBackend")
 
 # Path to blueutil command-line tool
-BLUEUTIL_PATH = "/usr/local/bin/blueutil"
+BLUEUTIL_PATH = "blueutil"
 BLUEUTIL_URL = "https://github.com/toy/blueutil"
 
 
