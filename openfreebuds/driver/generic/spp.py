@@ -2,6 +2,8 @@ import asyncio
 import platform
 import socket
 from contextlib import suppress
+import objc
+from IOBluetooth import IOBluetoothDevice, IOBluetoothRFCOMMChannel
 
 from openfreebuds.driver.generic import OfbDriverGeneric
 from openfreebuds.exceptions import FbStartupError
@@ -50,106 +52,8 @@ class OfbDriverSppGeneric(OfbDriverGeneric):
         log.info("Started")
 
     async def _start_macos(self):
-        try:
-            import objc
-            from CoreBluetooth import CBCentralManager
-            from openfreebuds_backend.macos.macos_bt import BluetoothManager, bt_connect, bt_is_connected, PYOBJC_AVAILABLE
-            from openfreebuds_backend.exception import OfbBackendDependencyMissingError, BackendException
-        except ImportError:
-            PYOBJC_AVAILABLE = False
-        
-        if not PYOBJC_AVAILABLE:
-            raise OfbBackendDependencyMissingError("PyObjC is required for macOS Bluetooth support", 
-                                                   "pip install pyobjc-framework-CoreBluetooth")
-        
-        log.info(f"Connecting to device: {self.device_address}")
-        
-        try:
-            # Initialize the Bluetooth manager
-            self.bt_manager = BluetoothManager.alloc().init()
-            
-            # Wait until the Bluetooth manager is powered on
-            while not self.bt_manager.is_powered_on:
-                await asyncio.sleep(0.1)
-            
-            # Connect to the device using its MAC address
-            await asyncio.sleep(self._spp_connect_delay)
-            
-            # Format the MAC address if needed
-            formatted_address = self.device_address
-            if ':' not in formatted_address and len(formatted_address) == 12:
-                formatted_address = ':'.join(formatted_address[i:i+2] for i in range(0, 12, 2)).upper()
-            
-            # Check if the device is already connected before attempting to connect
-            is_connected = await bt_is_connected(self.device_address)
-            log.info(f"Device connection status: {'Connected' if is_connected else 'Disconnected'}")
-            
-            # Only attempt to connect if not already connected
-            if not is_connected:
-                log.info(f"Attempting to connect to device: {formatted_address}")
-                success = await bt_connect(formatted_address)
-                if not success:
-                    raise FbStartupError(f"Failed to connect to device: {formatted_address}")
-                log.info(f"Successfully connected to {formatted_address}")
-            else:
-                log.info(f"Device {formatted_address} is already connected, skipping connection step")
-            
-            # Create a virtual reader/writer pair for communication
-            # This is a placeholder - actual implementation would depend on how
-            # data is exchanged with the device on macOS
-            reader, writer = await self._create_macos_io_streams(formatted_address)
-            
-            # Set up the receive task
-            self.__task_recv = asyncio.create_task(self._loop_recv(reader))
-            self._writer = writer
-            
-            log.info(f"Successfully connected to {formatted_address}")
-            
-        except (BackendException, Exception) as e:
-            log.error(f"Connection error: {str(e)}")
-            raise FbStartupError(f"Driver startup failed: {str(e)}")
-    async def _create_macos_io_streams(self, device_address):
-        """
-        Create reader and writer streams for macOS Bluetooth communication.
-        
-        This is a placeholder implementation. The actual implementation would depend
-        on how data is exchanged with the device on macOS.
-        """
-        # This is where you would implement the actual communication channel
-        # with the Bluetooth device on macOS.
-        # 
-        # Options might include:
-        # 1. Using IOBluetooth framework to create an RFCOMM channel
-        # 2. Using CoreBluetooth to communicate via GATT characteristics
-        # 3. Creating a custom protocol adapter
-        
-        # For now, we'll create a mock implementation that can be replaced later
-        class MacOSBluetoothReader:
-            async def read(self, n=-1):
-                # Placeholder for actual read implementation
-                await asyncio.sleep(1)
-                return b''
-                
-            async def readuntil(self, separator=b'\n'):
-                # Placeholder for actual readuntil implementation
-                await asyncio.sleep(1)
-                return b''
-        
-        class MacOSBluetoothWriter:
-            def write(self, data):
-                # Placeholder for actual write implementation
-                log.debug(f"Would write to device {device_address}: {data}")
-                return len(data)
-                
-            async def drain(self):
-                # Placeholder for actual drain implementation
-                await asyncio.sleep(0.1)
-                
-            def close(self):
-                # Placeholder for actual close implementation
-                log.debug(f"Closing connection to {device_address}")
-        
-        return MacOSBluetoothReader(), MacOSBluetoothWriter()
+        pass
+
     async def stop(self):
         await super().stop()
         if not self.started:
