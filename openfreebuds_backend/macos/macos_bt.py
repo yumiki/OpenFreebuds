@@ -82,21 +82,20 @@ class BluetoothBackend:
             
             for line in result.strip().split('\n'):
                 if line:
-                    parts = line.split(',')
-                    if len(parts) >= 2:
-                        address = parts[0].strip()
-                        name = parts[1].strip()
-                        
-                        # Check if device is connected
-                        connected = False
+                    address_match = line.split('address: ')[1].split(',')[0].strip() if 'address: ' in line else None
+                    name_match = line.split('name: "')[1].split('"')[0].strip() if 'name: "' in line else "Unknown"
+                    
+                    if address_match:
+                        # Check if device is connected (double-check with direct command)
+                        connected_status = False
                         with suppress(Exception):
-                            connected_result = await self._run_blueutil_command(["--is-connected", address])
-                            connected = "1" in connected_result.strip()
+                            connected_result = await self._run_blueutil_command(["--is-connected", address_match])
+                            connected_status = "1" in connected_result.strip()
                         
                         devices.append({
-                            "name": name,
-                            "address": address,
-                            "connected": connected
+                            "name": name_match,
+                            "address": address_match,
+                            "connected": connected_status
                         })
             
             return devices
