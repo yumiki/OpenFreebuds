@@ -2,8 +2,6 @@ import asyncio
 import platform
 import socket
 from contextlib import suppress
-import objc
-from IOBluetooth import IOBluetoothDevice, IOBluetoothRFCOMMChannel
 
 from openfreebuds.driver.generic import OfbDriverGeneric
 from openfreebuds.exceptions import FbStartupError
