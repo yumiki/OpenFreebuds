@@ -35,7 +35,9 @@ class BluetoothManager(NSObject):
     def init(self):
         self = objc.super(BluetoothManager, self).init()
         if self is None:
+            log.error("Failed to initialize BluetoothManager")
             return None
+        log.info("BluetoothManager initialized successfully")
         self.central_manager = CBCentralManager.alloc().initWithDelegate_queue_(self, None)
         self.devices = []
         self.is_powered_on = False
@@ -43,10 +45,13 @@ class BluetoothManager(NSObject):
         return self
     
     def centralManagerDidUpdateState_(self, central):
+        log.info(f"Central manager state updated: {central.state()}")
         if central.state() == CBManagerStatePoweredOn:
             self.is_powered_on = True
+            log.info("Bluetooth is powered on")
         else:
             self.is_powered_on = False
+            log.info("Bluetooth is not powered on")
             
     def centralManager_didDiscoverPeripheral_advertisementData_RSSI_(self, central, peripheral, data, rssi):
         device_info = {
@@ -63,9 +68,9 @@ class BluetoothBackend:
     """
     def __init__(self):
         self.devices = []
-        self.bt_manager = None
-        if PYOBJC_AVAILABLE:
-            self.bt_manager = BluetoothManager.alloc().init()
+        #self.bt_manager = None
+        #if PYOBJC_AVAILABLE:
+        #    self.bt_manager = BluetoothManager.alloc().init()
         
     async def get_devices(self):
         """
