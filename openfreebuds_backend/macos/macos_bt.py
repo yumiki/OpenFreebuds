@@ -9,17 +9,16 @@ from contextlib import suppress
 # Import PyObjC modules for macOS Bluetooth functionality
 try:
     import objc
-    from Foundation import NSObject, NSArray
-    from PyObjCTools import AppHelper
+    from Foundation import NSObject
     from CoreBluetooth import (
-        CBCentralManager, CBPeripheralManager,
-        CBManagerStatePoweredOn, CBManagerStatePoweredOff
+        CBCentralManager,
+        CBManagerStatePoweredOn
     )
     PYOBJC_AVAILABLE = True
 except ImportError:
     PYOBJC_AVAILABLE = False
 
-from openfreebuds_backend.exception import BackendException, OfbBackendDependencyMissingError
+from openfreebuds_backend.exception import OfbBackendDependencyMissingError
 
 log = logging.getLogger("OfbMacOSBackend")
 

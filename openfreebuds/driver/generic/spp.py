@@ -1,5 +1,4 @@
 import asyncio
-import platform
 import socket
 from contextlib import suppress
 
@@ -26,14 +25,6 @@ class OfbDriverSppGeneric(OfbDriverGeneric):
         }
 
     async def start(self):
-        if platform.system() == "Darwin":  # macOS
-            await self._start_macos()
-        else:  # Linux, Windows
-            await self._start_standard()
-        self.started = True
-        log.info("Started")
-
-    async def _start_standard(self):
         try:
             sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
             sock.settimeout(2)
@@ -48,9 +39,6 @@ class OfbDriverSppGeneric(OfbDriverGeneric):
         self._writer = writer
         self.started = True
         log.info("Started")
-
-    async def _start_macos(self):
-        pass
 
     async def stop(self):
         await super().stop()
